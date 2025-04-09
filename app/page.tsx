@@ -1,10 +1,147 @@
+'use client'
+
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, BadgeRussianRuble, CheckCircle, Code, Info, MessageSquare, Smartphone, Users } from "lucide-react"
+import { ArrowRight, Asterisk, BadgeRussianRuble, CheckCircle, Code, Info, MessageSquare, Smartphone, Users } from "lucide-react"
+import { toast, ToastContainer } from "react-toastify"
 
 import { Button } from "@/components/ui/button"
+import { Modal } from "@/components/ui/modal"
+import { useState } from "react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Textarea } from "@/components/ui/textarea"
+
+const FUNCTIONALITY_OPTIONS = [
+  {
+    id: 1,
+    isChecked: false,
+    text: "Каталог товаров/услуг"
+  },
+  {
+    id: 2,
+    isChecked: false,
+    text: "Корзина и онлайн-оплата"
+  },
+  {
+    id: 3,
+    isChecked: false,
+    text: "Бронирование/запись"
+  },
+  {
+    id: 4,
+    isChecked: false,
+    text: "Геймификация (квизы, викторины, конкурсы, тапалки и т.п.)"
+  },
+  {
+    id: 5,
+    isChecked: false,
+    text: "Личный кабинет пользователя"
+  },
+  {
+    id: 6,
+    isChecked: false,
+    text: "Интеграция с CRM / API / 1C или другими сервисами"
+  },
+  {
+    id: 7,
+    isChecked: false,
+    text: "Другое:"
+  },
+]
 
 export default function LandingPage() {
+
+  const [showBriefModal, setShowBriefModal] = useState(false)
+  const [currentStep, setCurrentStep] = useState(1);
+
+  const [name, setName] = useState<string>("")
+  const [niche, setNiche] = useState<string>("")
+  const [purpose, setPurpose] = useState<string>("")
+  const [audience, setAudience] = useState<string>("")
+  const [interaction, setInteraction] = useState<string>("")
+  const [cost, setCost] = useState<string>("")
+  const [deadline, setDeadline] = useState<string>("")
+  const [examples, setExamples] = useState<string>("")
+  const [contactPerson, setContactPerson] = useState<string>("")
+  const [contacts, setContacts] = useState<string>("")
+  const [addition, setAddition] = useState<string>("")
+
+  const [functionalityOptions, setFunctionalityOptions] = useState<{id: number; isChecked: boolean; text: string}[]>(FUNCTIONALITY_OPTIONS)
+  const [otherFunctionality, setOtherFunctionality] = useState<string>("")
+  
+  const handleNext = () => {
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+  
+  const handlePrev = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const sendBrief = async () => {
+    if (!name || !niche || !purpose || !contactPerson || !contacts) {
+      toast.error("Заполните все обязательные поля")
+      return
+    }
+    
+    let updatedOptions = [...functionalityOptions];
+    if (functionalityOptions[6].isChecked && otherFunctionality) {
+      updatedOptions = functionalityOptions.map(item => 
+        item.id === 7 
+          ? { ...item, text: otherFunctionality } 
+          : item
+      );
+      setFunctionalityOptions(updatedOptions);
+    }
+    const functionality = updatedOptions
+      .filter(item => item.isChecked)
+      .map(item => item.text)
+      .join(", ");
+    console.log(functionality);
+    
+    const response = await fetch("/api/briefs", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        name,
+        niche,
+        purpose,
+        audience,
+        interaction,
+        functionality,
+        cost,
+        deadline,
+        examples,
+        contactPerson,
+        contacts,
+        addition
+      })
+    })
+
+    const data = await response.json()
+    if (data.success) {
+      toast.info("Данные успешно отправлены")
+      setName("")
+      setNiche("")
+      setPurpose("")
+      setAudience("")
+      setInteraction("")
+      setFunctionalityOptions(FUNCTIONALITY_OPTIONS)
+      setCost("")
+      setDeadline("")
+      setExamples("")
+      setContactPerson("")
+      setContacts("")
+      setAddition("")
+      setShowBriefModal(false)
+    }
+  }
+  
   return (
     <div className="flex min-h-screen flex-col ">
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-10">
@@ -16,35 +153,35 @@ export default function LandingPage() {
             </Link>
             <nav className="hidden gap-6 md:flex">
               <Link
-                href="#services"
+                href="#features"
                 className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
-                Services
+                Что это?
               </Link>
               <Link
-                href="#portfolio"
+                href="#options"
                 className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
-                Portfolio
+                Какие бывают?
               </Link>
               <Link
                 href="#process"
                 className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
-                Process
+                Процесс
               </Link>
-              <Link
+              {/* <Link
                 href="#testimonials"
                 className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
               >
                 Testimonials
-              </Link>
+              </Link> */}
             </nav>
           </div>
           <div className="flex flex-1 items-center justify-end space-x-4">
             <nav className="flex items-center space-x-1">
               <Button asChild>
-                <Link href="#contact">Contact Us</Link>
+                <Link href="#contact">Оставить заявку</Link>
               </Button>
             </nav>
           </div>
@@ -66,7 +203,7 @@ export default function LandingPage() {
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button asChild size="lg">
                     <Link href="#contact">
-                      Оставить заявку
+                      Заполнить бриф
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
@@ -142,7 +279,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="services" className="w-full py-12 md:py-24 lg:py-32 bg-custom-gradient flex justify-center items-center">
+        <section id="options" className="w-full py-12 md:py-24 lg:py-32 bg-custom-gradient flex justify-center items-center">
           <div className="container px-4 md:px-6 w-full">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -229,9 +366,9 @@ export default function LandingPage() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Our Process</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Почему мы</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  We follow a structured approach to deliver high-quality Telegram Mini Apps.
+                  С нами все просто: системный подход, профессиональная разработка, долгосрочное сотрудничество - все, чтобы Вы кайфанули от процесса и наслаждались результатом
                 </p>
               </div>
             </div>
@@ -239,28 +376,33 @@ export default function LandingPage() {
               {[
                 {
                   step: 1,
-                  title: "Discovery & Planning",
-                  description: "We understand your business goals and plan the mini app accordingly.",
+                  title: "Исследование и аналитика",
+                  description: "Тщательно проанализируем Ваш кейс и построим модель мини-апа с учетом особенностей Вашего бизнеса.",
                 },
                 {
                   step: 2,
-                  title: "Design & Prototyping",
-                  description: "We create intuitive designs and interactive prototypes for your approval.",
+                  title: "Дизайн и прототипирование",
+                  description: "Создадим несколько интерактивных прототипов, чтобы Вы могли выбрать тот самый.",
                 },
                 {
                   step: 3,
-                  title: "Development",
-                  description: "Our developers build your mini app using the latest technologies.",
+                  title: "Разработка",
+                  description: "Используем самые современные технологии, чтобы собрать Ваше мини-приложение.",
                 },
                 {
                   step: 4,
-                  title: "Testing & QA",
-                  description: "Rigorous testing ensures your mini app works flawlessly.",
+                  title: "Тестирование и контроль качества",
+                  description: "Проведем краш-тест приложения, чтобы оно работало безупречно.",
                 },
                 {
                   step: 5,
-                  title: "Deployment & Support",
-                  description: "We launch your mini app and provide ongoing support and updates.",
+                  title: "Развертывание и поддержка",
+                  description: "Запустим ваше мини-приложение и обеспечим постоянную поддержку и обновления.",
+                },
+                {
+                  step: 6,
+                  title: "А еще...",
+                  description: "Появятся новые идеи и бизнес-цели? Отлично! Мы всегда с Вами, чтобы воплотить их в жизнь.",
                 },
               ].map((process) => (
                 <div key={process.step} className="flex gap-4 rounded-lg border p-4">
@@ -342,7 +484,7 @@ export default function LandingPage() {
               <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 Заполните бриф или свяжитесь с нами любым удобным способом
               </p>
-              <Button size="lg" className="mr-4">Открыть бриф</Button>
+              <Button onClick={() => setShowBriefModal(true)} size="lg" className="mr-4">Открыть бриф</Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="https://t.me/maggalon">
                   Написать в Telegram
@@ -379,6 +521,136 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      <Modal isOpen={showBriefModal} onClose={() => setShowBriefModal(false)}>
+          <div className="w-full flex flex-col gap-5">
+            <div className="w-full justify-center flex gap-2">
+              {[1,2,3,4,5].map(n => {
+                return (
+                  <div key={n} onClick={() => setCurrentStep(n)} className={`cursor-pointer h-4 w-4 rounded-full border-2 border-primary ${currentStep === n && "bg-primary"}`}></div>
+                )
+              })}
+            </div>
+            {currentStep === 1 &&
+              <>
+                <div className="flex flex-col gap-1">
+                  <div className="flex">
+                    <Label htmlFor="name" className="text-lg">Название компании / проекта</Label>
+                    <Asterisk className="h-4 w-4 text-red-400" />
+                  </div>
+                  <Input id="name" type="text" value={name} onChange={e => setName(e.target.value)} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <div className="flex">
+                    <Label htmlFor="niche" className="text-lg">Сфера бизнеса (ниша)</Label>
+                    <Asterisk className="h-4 w-4 text-red-400" />
+                  </div>
+                  <p className="max-w-[600px] text-muted-foreground text-sm">Например, e-commerce, услуги, образование, развлечения и т. д.</p>
+                  <Input id="niche" type="text" value={niche} onChange={e => setNiche(e.target.value)} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <div className="flex">
+                    <Label htmlFor="purpose" className="text-lg">Цель Mini App</Label>
+                    <Asterisk className="h-4 w-4 text-red-400" />
+                  </div>
+                  <p className="max-w-[600px] text-muted-foreground text-sm">Например, увеличение продаж, вовлечение аудитории, автоматизация процессов и т. д.</p>
+                  <Input id="purpose" type="text" value={purpose} onChange={e => setPurpose(e.target.value)} />
+                </div>
+                <div className="flex w-full justify-end">
+                  <Button onClick={handleNext}>Далее</Button>
+                </div>
+              </>
+            }
+            {currentStep === 2 &&
+              <>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="audience" className="text-lg">Кто ваши клиенты?</Label>
+                  <p className="max-w-[600px] text-muted-foreground text-sm">Опишите вашу аудиторию (возраст, интересы, поведение в Telegram)</p>
+                  <Input id="audience" type="text" value={audience} onChange={e => setAudience(e.target.value)} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="interaction" className="text-lg">Как они сейчас взаимодействуют с вашим бизнесом?</Label>
+                  <p className="max-w-[600px] text-muted-foreground text-sm">Например, через бота, сайт, соцсети</p>
+                  <Input id="interaction" type="text" value={interaction} onChange={e => setInteraction(e.target.value)} />
+                </div>
+                <div className="flex w-full justify-between">
+                  <Button variant="outline" onClick={handlePrev}>Назад</Button>
+                  <Button onClick={handleNext}>Далее</Button>
+                </div>
+              </>
+            }
+            {currentStep === 3 &&
+              <>
+                <div className="flex flex-col gap-1">
+                  <Label className="text-lg">Желаемый функционал (можно выбрать несколько)</Label>
+                  {functionalityOptions.map(item => {
+                    return (
+                      <div key={item.id} className="flex items-center gap-2">
+                        <Checkbox onClick={() => {setFunctionalityOptions(functionalityOptions.map(i => i.id === item.id ? {id: i.id, isChecked: !i.isChecked, text: i.text} : i))}} checked={item.isChecked} />
+                        <span className="text-muted-foreground">{item.text}</span>
+                        {item.id === 7 && <input disabled={!item.isChecked} type="text" value={otherFunctionality} onChange={e => setOtherFunctionality(e.target.value)} className=" border-b-2 focus:border-primary focus:outline-none text-sm text-muted-foreground" />}
+                      </div>
+                    )
+                  })
+
+                  }
+                </div>
+                <div className="flex w-full justify-between">
+                  <Button variant="outline" onClick={handlePrev}>Назад</Button>
+                  <Button onClick={handleNext}>Далее</Button>
+                </div>
+              </>
+            }
+            {currentStep === 4 &&
+              <>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="cost" className="text-lg">Ожидаемый бюджет</Label>
+                  <Input id="cost" type="text" value={cost} onChange={e => setCost(e.target.value)} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="deadline" className="text-lg">Желаемые сроки запуска</Label>
+                  <Input id="deadline" type="text" value={deadline} onChange={e => setDeadline(e.target.value)} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="reference" className="text-lg">Примеры Mini Apps или сервисов, которые вам нравятся</Label>
+                  <Input id="reference" type="text" value={examples} onChange={e => setExamples(e.target.value)} />
+                </div>
+                <div className="flex w-full justify-between">
+                  <Button variant="outline" onClick={handlePrev}>Назад</Button>
+                  <Button onClick={handleNext}>Далее</Button>
+                </div>
+              </>
+            }
+            {currentStep === 5 &&
+              <>
+                <div className="flex flex-col gap-1">
+                  <div className="flex">
+                    <Label htmlFor="contact_person" className="text-lg">Контактное лицо (имя, должность)</Label>
+                    <Asterisk className="h-4 w-4 text-red-400" />
+                  </div>
+                  <Input id="contact_person" type="text" value={contactPerson} onChange={e => setContactPerson(e.target.value)} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <div className="flex">
+                    <Label htmlFor="contact_info" className="text-lg">Контакты для связи</Label>
+                    <Asterisk className="h-4 w-4 text-red-400" />
+                  </div>
+                  <p className="max-w-[600px] text-muted-foreground text-sm">Telegram / Email / Телефон</p>
+                  <Input id="contact_info" type="text" value={contacts} onChange={e => setContacts(e.target.value)} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="addition" className="text-lg">Дополнительно</Label>
+                  <p className="max-w-[600px] text-muted-foreground text-sm">Любая информация, которой вы считаете нужным с нами поделиться</p>
+                  <Textarea id="addition" value={addition} onChange={e => setAddition(e.target.value)} />
+                </div>
+                <div className="flex w-full justify-between">
+                  <Button variant="outline" onClick={handlePrev}>Назад</Button>
+                  <Button onClick={sendBrief}>Отправить</Button>
+                </div>
+              </>
+            }
+          </div>
+      </Modal>
+      <ToastContainer className="" />
     </div>
   )
 }
