@@ -213,7 +213,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="flex items-center justify-center">
-                <div className="relative h-[450px] w-[450px]">
+                <div className="relative w-64 h-64 lg:w-[450px] lg:h-[450px]">
                   <Image
                     src="/designer.svg"
                     alt="Telegram Mini App Demo"
@@ -492,7 +492,7 @@ export default function LandingPage() {
               </Button>
             </div>
             <div className="flex items-center justify-center">
-              <div className="relative h-[350px] w-[350px]">
+              <div className="relative h-64 w-64">
                 <Image
                   src="/contact-filler.svg"
                   alt="Telegram Mini App Demo"
