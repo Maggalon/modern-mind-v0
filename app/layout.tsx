@@ -3,8 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Modern Mind',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  description: 'Telegram Mini Apps для бизнеса и не только',
 }
 
 export default function RootLayout({

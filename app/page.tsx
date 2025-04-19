@@ -328,41 +328,62 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* <section id="portfolio" className="w-full py-12 md:py-24 lg:py-32 bg-muted flex justify-center items-center">
+        <section id="portfolio" className="w-full py-12 md:py-24 lg:py-32 bg-muted flex justify-center items-center">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Our Portfolio</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Примеры</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Check out some of our successful Telegram Mini App projects.
+                  Шаблоны того, что можно сделать. Нажмите на любой, чтобы открыть в Телеграме
                 </p>
               </div>
             </div>
             <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3, 4, 5, 6].map((item) => (
-                <div key={item} className="group relative overflow-hidden rounded-lg border">
-                  <div className="aspect-square overflow-hidden">
-                    <Image
-                      src={`/placeholder.svg?height=600&width=600&text=Project+${item}`}
-                      alt={`Project ${item}`}
-                      width={600}
-                      height={600}
-                      className="object-cover transition-transform group-hover:scale-105"
-                    />
-                  </div>
+              {[
+                {
+                  name: "MERCH",
+                  image: "/showcase-1.png",
+                  description: "Мини-ап интернет-магазина",
+                  url: "https://t.me/mm_showcase_1_bot"
+                },
+                {
+                  name: "GLAMOUR",
+                  image: "/showcase-2.png",
+                  description: "Мини-ап с системой записи на услуги",
+                  url: "https://t.me/mm_showcase_2_bot"
+                },
+                {
+                  name: "LOYALTY",
+                  image: "/showcase-3.png",
+                  description: "Мини-ап с системой программы лояльности, проведения акций и розыгрышей",
+                  url: "https://t.me/mm_showcase_3_bot"
+                }
+              ].map((item) => (
+                <div key={item.name} className="group relative overflow-hidden rounded-lg border">
+                  <a href={item.url}>
+                    <div className="aspect-square overflow-hidden">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        width={600}
+                        height={600}
+                        className="object-cover transition-transform group-hover:scale-105"
+                      />
+                    </div>
+                  </a>
                   <div className="p-4">
-                    <h3 className="font-bold">Project {item}</h3>
+                    <h3 className="font-bold">{item.name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      {item % 2 === 0 ? "E-commerce" : "Service Booking"} Mini App
+                      {item.description}
                     </p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </section> */}
+        </section>
 
-        <section id="process" className="w-full py-12 md:py-24 lg:py-32 bg-muted flex justify-center items-center">
+        <section id="process" className="w-full py-12 md:py-24 lg:py-32  flex justify-center items-center">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -475,7 +496,7 @@ export default function LandingPage() {
 
         
 
-        <section id="contact" className="w-full py-12 md:py-24 lg:py-32 px-10 flex justify-center items-center">
+        <section id="contact" className="w-full py-12 md:py-24 bg-muted lg:py-32 px-10 flex justify-center items-center">
           <div className="container grid items-center gap-6 px-4 md:px-6 lg:grid-cols-2 lg:gap-10">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
